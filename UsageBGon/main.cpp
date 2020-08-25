@@ -22,13 +22,33 @@ int main()
 {
 	SetConsoleTitleA("UsageBeGone");
 
-	Parser::ReadSettings();
-	Parser::ReadProcessNames();
+	if (Parser::ReadSettings())
+	{
+		std::cout << "[Log] Settings loaded succesfully!" << std::endl;
+		std::cout << "[Settings] CPULimit = " << Parser::Settings::nCPULimit << std::endl;
+		std::cout << "[Settings] Timeout = " << Parser::Settings::nTimeout << std::endl;
+		std::cout << std::endl;
+	}
+	else
+		std::cout << "[Error] Couldn't load settings!" << std::endl;
+
+	if (Parser::ReadProcessNames()) 
+	{
+		std::cout << "[Log] Process Names loaded succesfully!" << std::endl;
+		if (Parser::vNames.empty())
+			std::cout << "[Warn] Process Names are empty! No applications will be monitored!" << std::endl;
+	}
+
+	else
+		std::cout << "[Error] Couldn't load process names!" << std::endl;
 
 	Funcs::StoreProcesses(Parser::vProcesses, Parser::vNames);
 	
 	CreateThreads();
 
-	Sleep(3000);
+	std::cout << "Program halted. Press any key to exit." << std::endl;
+
+	std::cin.get();
+
 	return 0;
 }
