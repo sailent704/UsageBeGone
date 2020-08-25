@@ -15,6 +15,8 @@ Process2.exe
 Process3.exe
 ```
 You may also visit ``settings.conf`` to change the CPU usage threshold and the process freeze time. 
-Once more features are added, your configs may become outdated. To refresh them, simply delete the old ones and run the executable. 
+Once more features are added, your configs may become outdated. To refresh them, simply delete the old ones and run the executable.
+
 It will create new ones automatically. (Note: This also works if you messed up your config!)
+
 The application is configured to display the loaded values at start-up, so if your settings don't match, try refreshing the config or reloading the application.
