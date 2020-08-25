@@ -8,5 +8,13 @@ The application is currently in heavy development, so expect daily updates with 
 This application is provided "as-is", and I am not responsible for any lost data.
 
 # Configuration
-In order for the application to monitor a process, make a ``names.txt`` file in the same folder where the UsageBeGone executable is located.
-This section is bound to be expanded as the current parser is only a placeholder.
+In order for the application to monitor a process, fill out the ``processes.conf`` file by putting each process name (case insensitive) on a new line - like this:
+```
+Process1.exe
+Process2.exe
+Process3.exe
+```
+You may also visit ``settings.conf`` to change the CPU usage threshold and the process freeze time. 
+Once more features are added, your configs may become outdated. To refresh them, simply delete the old ones and run the executable. 
+It will create new ones automatically. (Note: This also works if you messed up your config!)
+The application is configured to display the loaded values at start-up, so if your settings don't match, try refreshing the config or reloading the application.
