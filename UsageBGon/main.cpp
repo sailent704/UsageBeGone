@@ -1,52 +1,34 @@
 #include "Functions.hpp"
-#include <iostream>
+#include "Parser.hpp"
 #include <thread>
+
+//Víc zase zítra ve?er
+//Díky za sledování :)
+
 #pragma warning (disable : 6385)
 
-void ManageProcess(CProcess process)
+void CreateThreads()
 {
-	if (!process.hProcess)
-		return;
-	int nViolations = 0; //Reserved.
+	std::thread* tThreads = new std::thread[Parser::vProcesses.size()];
 
-	std::cout << "[Log] Started monitoring process: " << process.dwProcessId << std::endl;
+	for (size_t pos = 0; pos < Parser::vProcesses.size(); pos++)
+		tThreads[pos] = std::thread(Funcs::ManageProcess, Parser::vProcesses[pos]);
 
-	while (1)
-	{
-		//If the process is using more than 15% CPU
-		if (GetCpuUsage(process.hProcess) > 15)
-		{
-			NtSuspendProcess(process.hProcess);
-			std::cout << "[Log] Suspended process: " << process.dwProcessId << std::endl;
-
-			std::this_thread::sleep_for(std::chrono::seconds(30)); //Timeout option will be added
-
-			NtResumeProcess(process.hProcess);
-			std::cout << "[Log] Resumed process: " << process.dwProcessId << std::endl;
-		}
-
-		std::this_thread::sleep_for(std::chrono::milliseconds(1));
-	}
+	for (size_t pos = 0; pos < Parser::vProcesses.size(); pos++)
+		tThreads[pos].join();
 }
 
 int main()
 {
 	SetConsoleTitleA("UsageBeGone");
 
-	ParseNames();
-	StoreProcesses(vProcesses, vNames);
+	Parser::ReadSettings();
+	Parser::ReadProcessNames();
 
-	std::thread* tThreads = new std::thread[vProcesses.size()];
+	Funcs::StoreProcesses(Parser::vProcesses, Parser::vNames);
+	
+	CreateThreads();
 
-	for (size_t pos = 0; pos < vProcesses.size(); pos++)
-		tThreads[pos] = std::thread(ManageProcess, vProcesses[pos]);
-
-	for (size_t pos = 0; pos < vProcesses.size(); pos++)
-		tThreads[pos].join();
-
-	//TODO: Figure out how to call Cleanup after the user clicks "X" (CtrlHandler?)
-
-	std::cout << "[Log] Exiting..." << std::endl;
-
+	Sleep(3000);
 	return 0;
 }

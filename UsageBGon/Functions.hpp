@@ -2,7 +2,7 @@
 #include "NTAPI.hpp"
 #include <vector>
 #include <string>
-#include <fstream>
+#include <iostream>
 
 class CProcess
 {
@@ -15,13 +15,13 @@ public:
 	{}
 };
 
-inline std::vector<CProcess> vProcesses;
-inline std::vector<std::wstring> vNames;
+namespace Funcs
+{
+	void StoreProcesses(std::vector<CProcess>& vProc, const std::vector<std::wstring>& vNames);
 
-void StoreProcesses(std::vector<CProcess>& vProc, const std::vector<std::wstring>& vNames);
+	void Cleanup(std::vector<CProcess>& vProc);
 
-void Cleanup(std::vector<CProcess>& vProc);
+	int GetCpuUsage(HANDLE hProcess, unsigned long long dwMeasureTime = 1000);
 
-int GetCpuUsage(HANDLE hProcess, DWORD dwMeasureTime = 1000);
-
-void ParseNames(); //Move me to some parser namespace
+	void ManageProcess(CProcess hProcess);
+}

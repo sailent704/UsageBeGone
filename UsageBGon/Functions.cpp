@@ -1,10 +1,8 @@
-#include "Functions.hpp"
+#include "Parser.hpp"
 #include <TlHelp32.h>
-#include <iostream>
-#include <sstream>
 #include <thread>
 
-void StoreProcesses(std::vector<CProcess>& vProc, const std::vector<std::wstring>& vNames)
+void Funcs::StoreProcesses(std::vector<CProcess>& vProc, const std::vector<std::wstring>& vNames)
 {
 	//Loop over processes
 	HANDLE hSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
@@ -29,9 +27,11 @@ void StoreProcesses(std::vector<CProcess>& vProc, const std::vector<std::wstring
 			}
 		}
 	} while (Process32NextW(hSnap, &mEntry));
+
+	CloseHandle(hSnap); //Memory leak :flushed:
 }
 
-void Cleanup(std::vector<CProcess>& vProc)
+void Funcs::Cleanup(std::vector<CProcess>& vProc)
 {
 	for (auto& proc : vProc) {
 		NtResumeProcess(proc.hProcess);
@@ -39,7 +39,7 @@ void Cleanup(std::vector<CProcess>& vProc)
 	}
 }
 
-int GetCpuUsage(HANDLE hProcess, DWORD dwMeasureTime)
+int Funcs::GetCpuUsage(HANDLE hProcess, unsigned long long dwMeasureTime)
 {
 	FILETIME ftKernel1, ftUser1;
 	FILETIME ftKernel2, ftUser2;
@@ -66,42 +66,33 @@ int GetCpuUsage(HANDLE hProcess, DWORD dwMeasureTime)
 		i64UserTime = i64User2.QuadPart - i64User1.QuadPart;
 	}
 
-	return (i64KernelTime + i64UserTime) / (dwMeasureTime * 1000U); //Milliseconds to Microseconds
+	return static_cast<int>((i64KernelTime + i64UserTime) / (dwMeasureTime * 1000U)); //Milliseconds to Microseconds
 }
 
-void ParseNames()
+void Funcs::ManageProcess(CProcess hProcess)
 {
-	std::wifstream in("names.txt"); //Open the file
-	std::wstringstream stream;
+	if (!hProcess.hProcess)
+		return;
+	int nViolations = 0; //Reserved.
 
-	stream << in.rdbuf(); //Read the whole file
+	std::cout << "[Log] Started monitoring process: " << hProcess.dwProcessId << std::endl;
 
-	in.close();
-
-	std::wstring sComplete = stream.str();
-
-	size_t pos = 0;
-	std::wstring sBuffer;
-
-	while (pos <= sComplete.length())
+	while (1)
 	{
-		if (pos == sComplete.length())
+		//If the process is using more than nCPULimit% CPU
+		if (Funcs::GetCpuUsage(hProcess.hProcess) > Parser::Settings::nCPULimit)
 		{
-			vNames.push_back(sBuffer);
-			break;
+			NtSuspendProcess(hProcess.hProcess);
+			std::cout << "[Log] Suspended process: " << hProcess.dwProcessId << std::endl;
+
+			std::this_thread::sleep_for(std::chrono::seconds(Parser::Settings::nTimeout)); //Timeout option will be added
+
+			NtResumeProcess(hProcess.hProcess);
+			std::cout << "[Log] Resumed process: " << hProcess.dwProcessId << std::endl;
 		}
 
-		if (sComplete[pos] == '\n') {
-			std::wcout << "buf: " << sBuffer << std::endl;
-
-			vNames.push_back(sBuffer);
-			sBuffer.clear();
-
-			pos++;
-			continue;
-		}
-
-		sBuffer.push_back(sComplete[pos]);
-		pos++;
+		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 	}
 }
+
+	
