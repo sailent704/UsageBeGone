@@ -1,3 +1,6 @@
+# Urgent Note
+UsageBeGone is undergoing a massive rewrite. During this time, no updates are to be released. Expected release is on Friday the 4th, September 2020.
+
 # UsageBeGone
 UsageBeGone is a tool primarily targetted at anyone who's ever had problems with background programs randomly using too much CPU (like in the screenshot below).
 ![High CPU Usage](https://raw.githubusercontent.com/sailent704/UsageBeGone/master/highCPU.png)
