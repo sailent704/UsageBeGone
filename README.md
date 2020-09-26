@@ -1,5 +1,5 @@
-# Urgent Note
-UsageBeGone is undergoing a massive rewrite. During this time, no updates are to be released. Expected release is on Friday the 4th, September 2020.
+# Project is on-hold
+UsageBeGone is currently on-hold due to eXtended Shell becoming my main project.
 
 # UsageBeGone
 UsageBeGone is a tool primarily targetted at anyone who's ever had problems with background programs randomly using too much CPU (like in the screenshot below).
