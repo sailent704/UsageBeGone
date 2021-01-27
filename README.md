@@ -1,6 +1,3 @@
-# Project is on-hold
-UsageBeGone is currently on-hold due to eXtended Shell becoming my main project.
-
 # UsageBeGone
 UsageBeGone is a tool primarily targetted at anyone who's ever had problems with background programs randomly using too much CPU (like in the screenshot below).
 ![High CPU Usage](https://raw.githubusercontent.com/sailent704/UsageBeGone/master/highCPU.png)
